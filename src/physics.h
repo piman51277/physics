@@ -4,24 +4,24 @@
 class PhysicsVector
 {
 public:
-  double x;
-  double y;
+  float x;
+  float y;
 
-  PhysicsVector(double x = 0, double y = 0);
+  PhysicsVector(float x = 0, float y = 0);
 
   // vector operaions
   PhysicsVector operator+(PhysicsVector const &obj);
   PhysicsVector operator-(PhysicsVector const &obj);
 
   // dot product
-  double operator*(PhysicsVector const &obj);
+  float operator*(PhysicsVector const &obj);
 
   // scalar operations
-  PhysicsVector smul(double k);
-  PhysicsVector sdiv(double k);
+  PhysicsVector smul(float k);
+  PhysicsVector sdiv(float k);
 
   PhysicsVector norm();
-  double magnitude();
+  float magnitude();
 
   PhysicsVector project(PhysicsVector onto);
 
@@ -35,15 +35,15 @@ class PhysicsObject
 public:
   PhysicsVector position;
   PhysicsVector velocity;
-  double mass;
-  double size;
+  float mass;
+  float size;
   PhysicsVector netForce;
 
-  PhysicsObject(double mass = 0.0, double size = 1.0, PhysicsVector position = {0, 0}, PhysicsVector velocity = {0, 0});
+  PhysicsObject(float mass = 0.0, float size = 1.0, PhysicsVector position = {0, 0}, PhysicsVector velocity = {0, 0});
 
   void applyForce(PhysicsVector force);
 
-  void tick(double timeDelta);
+  void tick(float timeDelta);
 
   bool isBoxColliding(PhysicsObject &obj);
 

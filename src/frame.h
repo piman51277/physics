@@ -13,7 +13,7 @@ class Frame
 
   float scale;
   void draw();
-  void tick(double timeDelta);
+  void tick(float timeDelta);
 
   void mouseDownHandler(SDL_MouseButtonEvent e);
 

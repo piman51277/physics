@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-PhysicsVector::PhysicsVector(double x, double y)
+PhysicsVector::PhysicsVector(float x, float y)
 {
   this->x = x;
   this->y = y;
@@ -11,49 +11,49 @@ PhysicsVector::PhysicsVector(double x, double y)
 
 PhysicsVector PhysicsVector::operator+(PhysicsVector const &obj)
 {
-  double newX = obj.x + this->x;
-  double newY = obj.y + this->y;
+  float newX = obj.x + this->x;
+  float newY = obj.y + this->y;
   return PhysicsVector(newX, newY);
 };
 
 PhysicsVector PhysicsVector::operator-(PhysicsVector const &obj)
 {
-  double newX = this->x - obj.x;
-  double newY = this->y - obj.y;
+  float newX = this->x - obj.x;
+  float newY = this->y - obj.y;
   return PhysicsVector(newX, newY);
 }
 
-double PhysicsVector::operator*(PhysicsVector const &obj)
+float PhysicsVector::operator*(PhysicsVector const &obj)
 {
-  double dProd = this->x * obj.x + this->y * obj.y;
+  float dProd = this->x * obj.x + this->y * obj.y;
   return dProd;
 }
 
-PhysicsVector PhysicsVector::smul(double k)
+PhysicsVector PhysicsVector::smul(float k)
 {
   return PhysicsVector(this->x * k, this->y * k);
 }
 
-PhysicsVector PhysicsVector::sdiv(double k)
+PhysicsVector PhysicsVector::sdiv(float k)
 {
   return PhysicsVector(this->x / k, this->y / k);
 }
 
-double PhysicsVector::magnitude()
+float PhysicsVector::magnitude()
 {
   return sqrt(std::pow(this->x, 2) + std::pow(this->y, 2));
 }
 
 PhysicsVector PhysicsVector::norm()
 {
-  double length = this->magnitude();
+  float length = this->magnitude();
   return PhysicsVector(this->x / length, this->y / length);
 }
 
 PhysicsVector PhysicsVector::orthogonal()
 {
   PhysicsVector orth(-1.0 / this->x, 1.0 / this->y);
-  double currMag = this->magnitude();
+  float currMag = this->magnitude();
   return orth.norm().smul(currMag);
 }
 
@@ -68,13 +68,13 @@ PhysicsVector PhysicsVector::project(PhysicsVector v)
 PhysicsVector PhysicsVector::useBasis(PhysicsVector v, PhysicsVector basis1, PhysicsVector basis2)
 {
   // first find the coordinates of v in the basis
-  double x = v.project(basis1).magnitude();
-  double y = v.project(basis2).magnitude();
+  float x = v.project(basis1).magnitude();
+  float y = v.project(basis2).magnitude();
 
   return PhysicsVector(x, y);
 }
 
-PhysicsObject::PhysicsObject(double mass, double size, PhysicsVector position, PhysicsVector velocity)
+PhysicsObject::PhysicsObject(float mass, float size, PhysicsVector position, PhysicsVector velocity)
 {
   this->mass = mass;
   this->size = size;
@@ -87,7 +87,7 @@ void PhysicsObject::applyForce(PhysicsVector force)
   this->netForce = this->netForce + force;
 }
 
-void PhysicsObject::tick(double timeDelta)
+void PhysicsObject::tick(float timeDelta)
 {
   PhysicsVector acceleration = netForce.sdiv(this->mass).smul(timeDelta);
   netForce = {0, 0};
@@ -96,10 +96,10 @@ void PhysicsObject::tick(double timeDelta)
 }
 
 // helper function 1D collision
-std::pair<double, double> collide1D(double m1, double v1, double m2, double v2)
+std::pair<float, float> collide1D(float m1, float v1, float m2, float v2)
 {
-  double v1f = (v1 * (m1 - m2) + 2 * m2 * v2) / (m1 + m2);
-  double v2f = (v2 * (m2 - m1) + 2 * m1 * v1) / (m1 + m2);
+  float v1f = (v1 * (m1 - m2) + 2 * m2 * v2) / (m1 + m2);
+  float v2f = (v2 * (m2 - m1) + 2 * m1 * v1) / (m1 + m2);
   return std::make_pair(v1f, v2f);
 }
 
@@ -129,8 +129,8 @@ bool PhysicsObject::isBoxColliding(PhysicsObject &obj)
 void PhysicsObject::collide(PhysicsObject &obj)
 {
   // check if they are inside each other
-  double dist = sqrt(pow(this->position.x - obj.position.x, 2) + pow(this->position.y - obj.position.y, 2));
-  double overlap = this->size + obj.size - dist;
+  float dist = sqrt(pow(this->position.x - obj.position.x, 2) + pow(this->position.y - obj.position.y, 2));
+  float overlap = this->size + obj.size - dist;
 
   // if they are not overlapping, then don't do anything
   if (overlap <= 0)

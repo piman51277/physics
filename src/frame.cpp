@@ -12,12 +12,12 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
 
   this->scale = scale;
 
-  std::pair<double, double> xBounds = {0, (double)width * scale};
-  std::pair<double, double> yBounds = {0, (double)height * scale};
+  std::pair<float, float> xBounds = {0, (float)width * scale};
+  std::pair<float, float> yBounds = {0, (float)height * scale};
 
   sim = new Sim(xBounds, yBounds);
 
-  int tickInterval = 1000.0 / (double)framerate;
+  int tickInterval = 1000.0 / (float)framerate;
   auto lastTick = std::chrono::system_clock::now();
 
   sim->addObject({10, 200, {250, 250}, {0, 0}});
@@ -25,8 +25,8 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
   while (true)
   {
     auto current = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed = current - lastTick;
-    double delta = elapsed.count() * 1000;
+    std::chrono::duration<float> elapsed = current - lastTick;
+    float delta = elapsed.count() * 1000;
     lastTick = current;
 
     SDL_Event e;
@@ -153,7 +153,7 @@ void Frame::draw()
   SDL_RenderPresent(this->renderer);
 }
 
-void Frame::tick(double timeDelta)
+void Frame::tick(float timeDelta)
 {
   this->sim->tick(timeDelta);
 }
@@ -161,11 +161,11 @@ void Frame::tick(double timeDelta)
 void Frame::mouseDownHandler(SDL_MouseButtonEvent e)
 {
   static std::mt19937 rng;
-  static std::uniform_real_distribution<double> dist(-200, 200);
+  static std::uniform_real_distribution<float> dist(-200, 200);
 
   if (e.button == SDL_BUTTON_LEFT)
   {
-    PhysicsVector pos = {(double)e.x * scale, (double)e.y * scale};
+    PhysicsVector pos = {(float)e.x * scale, (float)e.y * scale};
     PhysicsObject obj = {1, 10, pos, {dist(rng), dist(rng)}};
     sim->addObject(obj);
   }

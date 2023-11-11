@@ -5,23 +5,23 @@
 class Sim
 {
 public:
-  std::pair<double, double> xBounds;
-  std::pair<double, double> yBounds;
+  std::pair<float, float> xBounds;
+  std::pair<float, float> yBounds;
 
-  double wallRestitution = 1.0;
+  float wallRestitution = 1.0;
 
   std::vector<PhysicsObject> objects = {};
 
-  Sim(std::pair<double, double> xBounds, std::pair<double, double> yBounds);
+  Sim(std::pair<float, float> xBounds, std::pair<float, float> yBounds);
 
   void addObject(PhysicsObject obj);
 
   // for applying user-controlled forces. Called first
-  void demoTick(double timeDelta);
+  void demoTick(float timeDelta);
 
   // applies all physics to all objects. Called last
-  void physicsTick(double timeDelta);
+  void physicsTick(float timeDelta);
 
   // performs a full tick
-  void tick(double timeDelta);
+  void tick(float timeDelta);
 };

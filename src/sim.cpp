@@ -1,7 +1,7 @@
 #include "sim.h"
 #include <iostream>
 
-Sim::Sim(std::pair<double, double> xBounds, std::pair<double, double> yBounds)
+Sim::Sim(std::pair<float, float> xBounds, std::pair<float, float> yBounds)
 {
   this->xBounds = xBounds;
   this->yBounds = yBounds;
@@ -20,7 +20,7 @@ void Sim::addObject(PhysicsObject obj)
   this->objects.push_back(obj);
 }
 
-void Sim::physicsTick(double timeDelta)
+void Sim::physicsTick(float timeDelta)
 {
 
   // first, for every pair of objects, check if they are colliding
@@ -65,12 +65,12 @@ void Sim::physicsTick(double timeDelta)
   }
 }
 
-void Sim::demoTick(double timeDelta)
+void Sim::demoTick(float timeDelta)
 {
   return;
 }
 
-void Sim::tick(double timeDelta)
+void Sim::tick(float timeDelta)
 {
   this->demoTick(timeDelta);
   this->physicsTick(timeDelta);
