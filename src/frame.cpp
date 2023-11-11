@@ -1,6 +1,5 @@
 #include "frame.h"
 #include <map>
-#include <iostream>
 #include <random>
 
 Frame::Frame(int width, int height, const char *title, float scale, int framerate)
@@ -20,7 +19,24 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
   int tickInterval = 1000.0 / (float)framerate;
   auto lastTick = std::chrono::system_clock::now();
 
-  sim->addObject({10, 200, {250, 250}, {0, 0}});
+  PhysicsObject lgObj(10, 200, {500, 500}, {0, 0});
+  sim->addObject(lgObj);
+  std::mt19937 rng;
+  std::uniform_real_distribution<float> dist(-200, 200);
+
+  // add objects in a grid
+  for (int x = 10; x <= 990; x += 20)
+  {
+    for (int y = 10; y <= 990; y += 20)
+    {
+      PhysicsObject smObj(1, 2, {(float)x, (float)y}, {dist(rng), dist(rng)});
+
+      if (!lgObj.isBoxColliding(smObj))
+      {
+        sim->addObject(smObj);
+      }
+    }
+  }
 
   while (true)
   {
@@ -29,7 +45,7 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
     float delta = elapsed.count() * 1000;
     lastTick = current;
 
-    //process all the events that have come in between
+    // process all the events that have come in between
     while (true)
     {
       SDL_Event e;
