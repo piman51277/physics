@@ -3,7 +3,7 @@
 #include <iostream>
 #include <random>
 
-Frame::Frame(int width, int height, const char *title, float scale, int framerate, int tickrate)
+Frame::Frame(int width, int height, const char *title, float scale, int framerate)
 {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
 
@@ -17,17 +17,18 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
 
   sim = new Sim(xBounds, yBounds);
 
-  int drawInterval = 1000.0 / (double)framerate;
-
-  int tickInterval = 1000.0 / (double)tickrate;
-  tickTimer = SDL_AddTimer(tickInterval, Frame::staticTick, this);
-
-  auto lastFrame = std::chrono::system_clock::now();
+  int tickInterval = 1000.0 / (double)framerate;
+  auto lastTick = std::chrono::system_clock::now();
 
   sim->addObject({10, 200, {250, 250}, {0, 0}});
 
   while (true)
   {
+    auto current = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed = current - lastTick;
+    double delta = elapsed.count() * 1000;
+    lastTick = current;
+
     SDL_Event e;
     if (SDL_PollEvent(&e))
     {
@@ -45,15 +46,13 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
       }
     }
 
+    tick(delta / 1000);
     draw();
 
-    auto current = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed = current - lastFrame;
-    double time = elapsed.count();
-
-    if (time * 1000 < drawInterval)
+    if (delta <= tickInterval)
     {
-      SDL_Delay(drawInterval - time * 1000);
+      // inceased scheduling delay
+      SDL_Delay(tickInterval - delta);
     }
   }
 }
@@ -86,7 +85,7 @@ void Frame::draw()
     PhysicsVector pos = obj.position;
     float size = obj.size;
 
-    // drawing an actual circle is hard, so we will draw 16-gons instead
+    // tickIng an actual circle is hard, so we will draw 16-gons instead
     SDL_FPoint points[17];
     SDL_FPoint *offsets = new SDL_FPoint[17];
 
@@ -154,20 +153,9 @@ void Frame::draw()
   SDL_RenderPresent(this->renderer);
 }
 
-Uint32 Frame::staticTick(Uint32 interval, void *param)
+void Frame::tick(double timeDelta)
 {
-  Frame *self = static_cast<Frame *>(param);
-  Sim *sim = self->sim;
-
-  // get time since last tick in seconds
-  auto current = std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsed = current - self->lastTick;
-  double time = elapsed.count();
-  self->lastTick = current;
-
-  sim->tick(time);
-
-  return interval;
+  this->sim->tick(timeDelta);
 }
 
 void Frame::mouseDownHandler(SDL_MouseButtonEvent e)
@@ -178,7 +166,7 @@ void Frame::mouseDownHandler(SDL_MouseButtonEvent e)
   if (e.button == SDL_BUTTON_LEFT)
   {
     PhysicsVector pos = {(double)e.x * scale, (double)e.y * scale};
-    PhysicsObject obj = {1, 2, pos, {dist(rng), dist(rng)}};
+    PhysicsObject obj = {1, 10, pos, {dist(rng), dist(rng)}};
     sim->addObject(obj);
   }
 }
