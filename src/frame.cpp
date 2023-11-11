@@ -1,6 +1,7 @@
 #include "frame.h"
 #include <map>
 #include <iostream>
+#include <random>
 
 Frame::Frame(int width, int height, const char *title, float scale, int framerate, int tickrate)
 {
@@ -22,6 +23,8 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
   tickTimer = SDL_AddTimer(tickInterval, Frame::staticTick, this);
 
   auto lastFrame = std::chrono::system_clock::now();
+
+  sim->addObject({10, 200, {250, 250}, {0, 0}});
 
   while (true)
   {
@@ -169,10 +172,13 @@ Uint32 Frame::staticTick(Uint32 interval, void *param)
 
 void Frame::mouseDownHandler(SDL_MouseButtonEvent e)
 {
+  static std::mt19937 rng;
+  static std::uniform_real_distribution<double> dist(-100, 100);
+
   if (e.button == SDL_BUTTON_LEFT)
   {
     PhysicsVector pos = {(double)e.x * scale, (double)e.y * scale};
-    PhysicsObject obj = {1, 10, pos, {0, 0}};
+    PhysicsObject obj = {1, 5, pos, {dist(rng), dist(rng)}};
     sim->addObject(obj);
   }
 }

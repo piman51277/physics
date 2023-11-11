@@ -8,7 +8,7 @@ public:
   std::pair<double, double> xBounds;
   std::pair<double, double> yBounds;
 
-  double wallRestitution = 0.8;
+  double wallRestitution = 1.0;
 
   std::vector<PhysicsObject> objects = {};
 

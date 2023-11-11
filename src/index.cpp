@@ -2,6 +2,6 @@
 
 int main()
 {
-  Frame frame(1920, 1080, "test", 10, 120, 60);
+  Frame frame(1920, 1080, "test", 1, 60, 30);
   return 0;
 }

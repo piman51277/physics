@@ -1,5 +1,4 @@
 #include "sim.h"
-
 #include <iostream>
 
 Sim::Sim(std::pair<double, double> xBounds, std::pair<double, double> yBounds)
@@ -65,16 +64,8 @@ void Sim::physicsTick(double timeDelta)
   }
 }
 
-PhysicsVector Gravity = {0, 9.8};
-
 void Sim::demoTick(double timeDelta)
 {
-  // add gravity to each object
-  for (int i = 0; i < this->objects.size(); i++)
-  {
-    this->objects[i].applyForce(Gravity);
-  }
-
   return;
 }
 
