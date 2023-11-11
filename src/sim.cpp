@@ -15,8 +15,6 @@ void Sim::addObject(PhysicsObject obj)
 
 void Sim::physicsTick(double timeDelta)
 {
-  std::cout << this->objects.size() << std::endl;
-
   // first, for every pair of objects, check if they are colliding
   for (int i = 0; i < this->objects.size(); i++)
   {
