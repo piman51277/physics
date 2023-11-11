@@ -173,12 +173,12 @@ Uint32 Frame::staticTick(Uint32 interval, void *param)
 void Frame::mouseDownHandler(SDL_MouseButtonEvent e)
 {
   static std::mt19937 rng;
-  static std::uniform_real_distribution<double> dist(-100, 100);
+  static std::uniform_real_distribution<double> dist(-200, 200);
 
   if (e.button == SDL_BUTTON_LEFT)
   {
     PhysicsVector pos = {(double)e.x * scale, (double)e.y * scale};
-    PhysicsObject obj = {1, 5, pos, {dist(rng), dist(rng)}};
+    PhysicsObject obj = {1, 2, pos, {dist(rng), dist(rng)}};
     sim->addObject(obj);
   }
 }
