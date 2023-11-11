@@ -92,6 +92,9 @@ void Frame::draw()
     int sizeId = (int)size * 1000;
     if (offsetCache.find(sizeId) != offsetCache.end())
     {
+      // unallocate the previous offsets
+      delete[] offsets;
+
       // yes, we do
       offsets = offsetCache[sizeId];
     }
