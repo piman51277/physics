@@ -72,14 +72,13 @@ void Frame::draw()
   static std::map<int, SDL_FPoint *> offsetCache;
 
   Sim *sim = this->sim;
-  std::vector<PhysicsObject> objects = sim->objects;
 
   // clear the screen
   SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
   SDL_RenderClear(this->renderer);
 
   // draw the objects onto the canvas
-  for (PhysicsObject obj : objects)
+  for (PhysicsObject obj : sim->objects)
   {
     PhysicsVector pos = obj.position;
     float size = obj.size;

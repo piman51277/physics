@@ -84,20 +84,13 @@ PhysicsObject::PhysicsObject(double mass, double size, PhysicsVector position, P
 
 void PhysicsObject::applyForce(PhysicsVector force)
 {
-  this->forces.push_back(force);
+  this->netForce = this->netForce + force;
 }
 
 void PhysicsObject::tick(double timeDelta)
 {
-
-  PhysicsVector netForce = PhysicsVector(0, 0);
-  for (PhysicsVector force : this->forces)
-  {
-    netForce = netForce + force;
-  }
-  this->forces.clear();
-
   PhysicsVector acceleration = netForce.sdiv(this->mass).smul(timeDelta);
+  netForce = {0, 0};
   this->velocity = this->velocity + acceleration;
   this->position = this->position + this->velocity.smul(timeDelta);
 }
@@ -110,12 +103,27 @@ std::pair<double, double> collide1D(double m1, double v1, double m2, double v2)
   return std::make_pair(v1f, v2f);
 }
 
-bool PhysicsObject::isColliding(PhysicsObject &obj)
+bool PhysicsObject::isBoxColliding(PhysicsObject &obj)
 {
-  // for this we assume all objects are perfect circles
-  double dist = sqrt(pow(this->position.x - obj.position.x, 2) + pow(this->position.y - obj.position.y, 2));
+  // bounding box check
+  if (this->position.x + this->size < obj.position.x - obj.size)
+  {
+    return false;
+  }
+  if (this->position.x - this->size > obj.position.x + obj.size)
+  {
+    return false;
+  }
+  if (this->position.y + this->size < obj.position.y - obj.size)
+  {
+    return false;
+  }
+  if (this->position.y - this->size > obj.position.y + obj.size)
+  {
+    return false;
+  }
 
-  return dist <= this->size + obj.size;
+  return true;
 }
 
 void PhysicsObject::collide(PhysicsObject &obj)
@@ -123,6 +131,13 @@ void PhysicsObject::collide(PhysicsObject &obj)
   // check if they are inside each other
   double dist = sqrt(pow(this->position.x - obj.position.x, 2) + pow(this->position.y - obj.position.y, 2));
   double overlap = this->size + obj.size - dist;
+
+  // if they are not overlapping, then don't do anything
+  if (overlap <= 0)
+  {
+    return;
+  }
+
   PhysicsVector direction = (this->position - obj.position).norm();
 
   // if the overlap is more than 0.1m, then apply a strong force to separate them

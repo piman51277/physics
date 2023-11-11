@@ -1,5 +1,7 @@
 #include "sim.h"
 
+#include <iostream>
+
 Sim::Sim(std::pair<double, double> xBounds, std::pair<double, double> yBounds)
 {
   this->xBounds = xBounds;
@@ -11,16 +13,16 @@ void Sim::addObject(PhysicsObject obj)
   this->objects.push_back(obj);
 }
 
-PhysicsVector Gravity = {0, 40};
-
 void Sim::physicsTick(double timeDelta)
 {
+  std::cout << this->objects.size() << std::endl;
+
   // first, for every pair of objects, check if they are colliding
   for (int i = 0; i < this->objects.size(); i++)
   {
     for (int j = i + 1; j < this->objects.size(); j++)
     {
-      if (this->objects[i].isColliding(this->objects[j]))
+      if (this->objects[i].isBoxColliding(this->objects[j]))
       {
         this->objects[i].collide(this->objects[j]);
       }
@@ -32,9 +34,6 @@ void Sim::physicsTick(double timeDelta)
   // then, process each object
   for (int i = 0; i < this->objects.size(); i++)
   {
-    // apply gravity
-    this->objects[i].applyForce(Gravity.smul(this->objects[i].mass));
-
     // tick
     this->objects[i].tick(timeDelta);
 
@@ -63,9 +62,16 @@ void Sim::physicsTick(double timeDelta)
   }
 }
 
+PhysicsVector Gravity = {0, 9.8};
+
 void Sim::demoTick(double timeDelta)
 {
-  // don't do anything
+  // add gravity to each object
+  for (int i = 0; i < this->objects.size(); i++)
+  {
+    this->objects[i].applyForce(Gravity);
+  }
+
   return;
 }
 

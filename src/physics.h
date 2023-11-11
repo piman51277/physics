@@ -37,7 +37,7 @@ public:
   PhysicsVector velocity;
   double mass;
   double size;
-  std::vector<PhysicsVector> forces = {};
+  PhysicsVector netForce;
 
   PhysicsObject(double mass = 0.0, double size = 1.0, PhysicsVector position = {0, 0}, PhysicsVector velocity = {0, 0});
 
@@ -45,7 +45,7 @@ public:
 
   void tick(double timeDelta);
 
-  bool isColliding(PhysicsObject &obj);
+  bool isBoxColliding(PhysicsObject &obj);
 
   // This should be called *once* per pair!
   void collide(PhysicsObject &obj);
