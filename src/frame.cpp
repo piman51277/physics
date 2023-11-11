@@ -29,19 +29,27 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
     float delta = elapsed.count() * 1000;
     lastTick = current;
 
-    SDL_Event e;
-    if (SDL_PollEvent(&e))
+    //process all the events that have come in between
+    while (true)
     {
-      switch (e.type)
+      SDL_Event e;
+      if (SDL_PollEvent(&e))
       {
-      case SDL_QUIT:
-        this->~Frame();
-        return;
-      case SDL_MOUSEBUTTONDOWN:
-        mouseDownHandler(*reinterpret_cast<SDL_MouseButtonEvent *>(&e));
-        break;
-      case SDL_MOUSEMOTION:
-        mouseDownHandler(*reinterpret_cast<SDL_MouseButtonEvent *>(&e));
+        switch (e.type)
+        {
+        case SDL_QUIT:
+          this->~Frame();
+          return;
+        case SDL_MOUSEBUTTONDOWN:
+          mouseDownHandler(*reinterpret_cast<SDL_MouseButtonEvent *>(&e));
+          break;
+        case SDL_MOUSEMOTION:
+          mouseDownHandler(*reinterpret_cast<SDL_MouseButtonEvent *>(&e));
+          break;
+        }
+      }
+      else
+      {
         break;
       }
     }
