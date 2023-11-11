@@ -14,13 +14,20 @@ public:
   PhysicsVector operator-(PhysicsVector const &obj);
 
   // dot product
-  PhysicsVector operator*(PhysicsVector const &obj);
+  double operator*(PhysicsVector const &obj);
 
   // scalar operations
   PhysicsVector smul(double k);
   PhysicsVector sdiv(double k);
 
   PhysicsVector norm();
+  double magnitude();
+
+  PhysicsVector project(PhysicsVector onto);
+
+  static PhysicsVector useBasis(PhysicsVector v, PhysicsVector basis1, PhysicsVector basis2);
+
+  PhysicsVector orthogonal();
 };
 
 class PhysicsObject

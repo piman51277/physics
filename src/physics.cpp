@@ -23,7 +23,7 @@ PhysicsVector PhysicsVector::operator-(PhysicsVector const &obj)
   return PhysicsVector(newX, newY);
 }
 
-PhysicsVector PhysicsVector::operator*(PhysicsVector const &obj)
+double PhysicsVector::operator*(PhysicsVector const &obj)
 {
   double dProd = this->x * obj.x + this->y * obj.y;
   return dProd;
@@ -39,10 +39,39 @@ PhysicsVector PhysicsVector::sdiv(double k)
   return PhysicsVector(this->x / k, this->y / k);
 }
 
+double PhysicsVector::magnitude()
+{
+  return sqrt(std::pow(this->x, 2) + std::pow(this->y, 2));
+}
+
 PhysicsVector PhysicsVector::norm()
 {
-  double length = sqrt(std::pow(this->x, 2) + std::pow(this->y, 2));
+  double length = this->magnitude();
   return PhysicsVector(this->x / length, this->y / length);
+}
+
+PhysicsVector PhysicsVector::orthogonal()
+{
+  PhysicsVector orth(-1.0 / this->x, 1.0 / this->y);
+  double currMag = this->magnitude();
+  return orth.norm().smul(currMag);
+}
+
+PhysicsVector PhysicsVector::project(PhysicsVector v)
+{
+  PhysicsVector norm = v.norm();
+  PhysicsVector tvec(this->x, this->y);
+  return norm.smul(norm * tvec);
+}
+
+// Uses an orthogonal basis to find the coordinates of a vector in that basis
+PhysicsVector PhysicsVector::useBasis(PhysicsVector v, PhysicsVector basis1, PhysicsVector basis2)
+{
+  // first find the coordinates of v in the basis
+  double x = v.project(basis1).magnitude();
+  double y = v.project(basis2).magnitude();
+
+  return PhysicsVector(x, y);
 }
 
 PhysicsObject::PhysicsObject(double mass, double size, PhysicsVector position, PhysicsVector velocity)
@@ -94,25 +123,19 @@ void PhysicsObject::collide(PhysicsObject &obj)
   // check if they are inside each other
   double dist = sqrt(pow(this->position.x - obj.position.x, 2) + pow(this->position.y - obj.position.y, 2));
   double overlap = this->size + obj.size - dist;
+  PhysicsVector direction = (this->position - obj.position).norm();
 
   // if the overlap is more than 0.1m, then apply a strong force to separate them
   if (overlap > 0.1)
   {
-    // calculate the direction of the force
-    PhysicsVector direction = this->position - obj.position;
-    direction = direction.sdiv(dist);
-
-    // get the norm of the direction
-    PhysicsVector norm = direction.norm();
-
     // apply the force
-    double strength = overlap;
-    this->applyForce(norm.smul(strength * 10));
-    obj.applyForce(norm.smul(strength * -10));
+    double strength = overlap + 0.01;
+    this->applyForce(direction.smul(strength * 10));
+    obj.applyForce(direction.smul(strength * -10));
 
     // teleport them away
-    this->position = this->position + norm.smul(overlap * 0.5);
-    obj.position = obj.position - norm.smul(overlap * 0.5);
+    this->position = this->position + direction.smul(overlap * 0.5);
+    obj.position = obj.position - direction.smul(overlap * 0.5);
   }
 
   // for now, make it a perfectly elastic collision
