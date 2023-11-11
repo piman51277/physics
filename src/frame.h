@@ -3,6 +3,7 @@
 #include "sim.h"
 #include "physics.h"
 #include <chrono>
+#include <list>
 
 class Frame
 {
@@ -12,6 +13,9 @@ class Frame
   Sim *sim;
 
   float scale;
+
+  std::list<PhysicsVector> path = {};
+
   void draw();
   void tick(float timeDelta);
 

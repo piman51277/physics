@@ -19,17 +19,17 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
   int tickInterval = 1000.0 / (float)framerate;
   auto lastTick = std::chrono::system_clock::now();
 
-  PhysicsObject lgObj(10, 200, {500, 500}, {0, 0});
+  PhysicsObject lgObj(5, 50, {500, 500}, {0, 0});
   sim->addObject(lgObj);
   std::mt19937 rng;
-  std::uniform_real_distribution<float> dist(-200, 200);
+  std::uniform_real_distribution<float> dist(-300, 300);
 
   // add objects in a grid
   for (int x = 10; x <= 990; x += 20)
   {
     for (int y = 10; y <= 990; y += 20)
     {
-      PhysicsObject smObj(1, 2, {(float)x, (float)y}, {dist(rng), dist(rng)});
+      PhysicsObject smObj(1, 1, {(float)x, (float)y}, {dist(rng), dist(rng)});
 
       if (!lgObj.isBoxColliding(smObj))
       {
@@ -174,12 +174,32 @@ void Frame::draw()
     SDL_RenderDrawLinesF(this->renderer, points, 17);
   }
 
+  // draw the path
+  SDL_FPoint fpath[1000];
+  int i = 0;
+  for (auto elem : this->path)
+  {
+    fpath[i] = {elem.x, elem.y};
+    i += 1;
+  }
+  SDL_SetRenderDrawColor(this->renderer, 0, 255, 0, 255);
+  SDL_RenderDrawLinesF(this->renderer, fpath, this->path.size());
+
   SDL_RenderPresent(this->renderer);
 }
 
 void Frame::tick(float timeDelta)
 {
   this->sim->tick(timeDelta);
+
+  // add the pos of the first element to path
+  this->path.push_back(this->sim->objects[0].position);
+
+  // if the path is longer than 1000, cull
+  if (this->path.size() > 1000)
+  {
+    this->path.pop_front();
+  }
 }
 
 void Frame::mouseDownHandler(SDL_MouseButtonEvent e)
