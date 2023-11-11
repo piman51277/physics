@@ -1,4 +1,6 @@
 #include "frame.h"
+#include <map>
+
 Frame::Frame(int width, int height, const char *title, int framerate, int tickrate)
 {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
@@ -52,6 +54,8 @@ void Frame::draw()
       0.382683  // cos(67.5), sin(22.5)
   };
 
+  static std::map<int, SDL_FPoint *> offsetCache;
+
   Sim *sim = this->sim;
   std::vector<PhysicsObject> objects = sim->objects;
 
@@ -67,50 +71,60 @@ void Frame::draw()
 
     // drawing an actual circle is hard, so we will draw 16-gons instead
     SDL_FPoint points[17];
+    SDL_FPoint *offsets = new SDL_FPoint[17];
 
-    // precompute points
-    const float tbl[3] = {
-        size * trig[0],
-        size * trig[1],
-        size * trig[2]};
+    // do we already have the points for this size?
+    int sizeId = (int)size * 1000;
+    if (offsetCache.find(sizeId) != offsetCache.end())
+    {
+      // yes, we do
+      offsets = offsetCache[sizeId];
+    }
+    else
+    {
+      // precompute offsets
+      const float tbl[3] = {
+          size * trig[0],
+          size * trig[1],
+          size * trig[2]};
 
-    // going CC
-    //(these are relative points, we will offset later)
+      // going CC
+      //(these are relative offsets, we will offset later)
 
-    // Q1
-    points[0] = {size, 0};
-    points[1] = {tbl[0], tbl[2]};
-    points[2] = {tbl[1], tbl[1]};
-    points[3] = {tbl[2], tbl[0]};
+      // Q1
+      offsets[0] = {size, 0};
+      offsets[1] = {tbl[0], tbl[2]};
+      offsets[2] = {tbl[1], tbl[1]};
+      offsets[3] = {tbl[2], tbl[0]};
 
-    // Q2
-    points[4] = {0, size};
-    points[5] = {-tbl[2], tbl[0]};
-    points[6] = {-tbl[1], tbl[1]};
-    points[7] = {-tbl[0], tbl[2]};
+      // Q2
+      offsets[4] = {0, size};
+      offsets[5] = {-tbl[2], tbl[0]};
+      offsets[6] = {-tbl[1], tbl[1]};
+      offsets[7] = {-tbl[0], tbl[2]};
 
-    // Q3
-    points[8] = {-size, 0};
-    points[9] = {-tbl[0], -tbl[2]};
-    points[10] = {-tbl[1], -tbl[1]};
-    points[11] = {-tbl[2], -tbl[0]};
+      // Q3
+      offsets[8] = {-size, 0};
+      offsets[9] = {-tbl[0], -tbl[2]};
+      offsets[10] = {-tbl[1], -tbl[1]};
+      offsets[11] = {-tbl[2], -tbl[0]};
 
-    // Q4
-    points[12] = {0, -size};
-    points[13] = {tbl[2], -tbl[0]};
-    points[14] = {tbl[1], -tbl[1]};
-    points[15] = {tbl[0], -tbl[2]};
+      // Q4
+      offsets[12] = {0, -size};
+      offsets[13] = {tbl[2], -tbl[0]};
+      offsets[14] = {tbl[1], -tbl[1]};
+      offsets[15] = {tbl[0], -tbl[2]};
 
-    points[16] = {size, 0};
+      offsets[16] = {size, 0};
+
+      offsetCache[sizeId] = offsets;
+    }
 
     // scale & offset points
     for (int i = 0; i < 17; i++)
     {
-      points[i].x += pos.x;
-      points[i].y += pos.y;
-
-      points[i].x *= 0.5;
-      points[i].y *= 0.5;
+      points[i].x = (offsets[i].x + pos.x) * 0.5;
+      points[i].y = (offsets[i].y + pos.y) * 0.5;
     }
 
     SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
