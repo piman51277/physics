@@ -1,15 +1,17 @@
 #include "frame.h"
 #include <map>
 
-Frame::Frame(int width, int height, const char *title, int framerate, int tickrate)
+Frame::Frame(int width, int height, const char *title, float scale, int framerate, int tickrate)
 {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
 
   window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-  std::pair<double, double> xBounds = {0, (double)width * 2.0};
-  std::pair<double, double> yBounds = {0, (double)height * 2.0};
+  this->scale = scale;
+
+  std::pair<double, double> xBounds = {0, (double)width * scale};
+  std::pair<double, double> yBounds = {0, (double)height * scale};
 
   sim = new Sim(xBounds, yBounds);
 
@@ -123,8 +125,8 @@ void Frame::draw()
     // scale & offset points
     for (int i = 0; i < 17; i++)
     {
-      points[i].x = (offsets[i].x + pos.x) * 0.5;
-      points[i].y = (offsets[i].y + pos.y) * 0.5;
+      points[i].x = (offsets[i].x + pos.x) * (1.0 / scale);
+      points[i].y = (offsets[i].y + pos.y) * (1.0 / scale);
     }
 
     SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
@@ -154,7 +156,7 @@ void Frame::mouseDownHandler(SDL_MouseButtonEvent e)
 {
   if (e.button == SDL_BUTTON_LEFT)
   {
-    PhysicsVector pos = {(double)e.x * 2.0, (double)e.y * 2.0};
+    PhysicsVector pos = {(double)e.x * scale, (double)e.y * scale};
     PhysicsObject obj = {1, 100, pos, {0, 0}};
     sim->addObject(obj);
   }
