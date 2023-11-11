@@ -34,8 +34,6 @@ void Sim::physicsTick(double timeDelta)
     }
   }
 
-  const double restitution = 0.8;
-
   // then, process each object
   for (int i = 0; i < this->objects.size(); i++)
   {
@@ -46,23 +44,23 @@ void Sim::physicsTick(double timeDelta)
     if (this->objects[i].position.x < this->xBounds.first)
     {
       this->objects[i].position.x = this->xBounds.first;
-      this->objects[i].velocity.x = -this->objects[i].velocity.x * restitution;
+      this->objects[i].velocity.x = -this->objects[i].velocity.x * wallRestitution;
     }
     else if (this->objects[i].position.x > this->xBounds.second)
     {
       this->objects[i].position.x = this->xBounds.second;
-      this->objects[i].velocity.x = -this->objects[i].velocity.x * restitution;
+      this->objects[i].velocity.x = -this->objects[i].velocity.x * wallRestitution;
     }
 
     if (this->objects[i].position.y < this->yBounds.first)
     {
       this->objects[i].position.y = this->yBounds.first;
-      this->objects[i].velocity.y = -this->objects[i].velocity.y * restitution;
+      this->objects[i].velocity.y = -this->objects[i].velocity.y * wallRestitution;
     }
     else if (this->objects[i].position.y > this->yBounds.second)
     {
       this->objects[i].position.y = this->yBounds.second;
-      this->objects[i].velocity.y = -this->objects[i].velocity.y * restitution;
+      this->objects[i].velocity.y = -this->objects[i].velocity.y * wallRestitution;
     }
   }
 }

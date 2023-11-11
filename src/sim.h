@@ -8,6 +8,8 @@ public:
   std::pair<double, double> xBounds;
   std::pair<double, double> yBounds;
 
+  double wallRestitution = 0.8;
+
   std::vector<PhysicsObject> objects = {};
 
   Sim(std::pair<double, double> xBounds, std::pair<double, double> yBounds);
