@@ -5,12 +5,14 @@ Sim::Sim(std::pair<double, double> xBounds, std::pair<double, double> yBounds)
 {
   this->xBounds = xBounds;
   this->yBounds = yBounds;
+
+  this->objects.reserve(10000);
 }
 
 void Sim::addObject(PhysicsObject obj)
 {
-  // cap entity count at 6000
-  if (this->objects.size() >= 6000)
+  // cap entity count at 10000
+  if (this->objects.size() >= 10000)
   {
     return;
   }
