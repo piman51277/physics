@@ -39,27 +39,26 @@ void Sim::physicsTick(double timeDelta)
     // tick
     this->objects[i].tick(timeDelta);
 
-    // check bounds
-    if (this->objects[i].position.x < this->xBounds.first)
+    // check bounds (accounting for size)
+    if (this->objects[i].position.x + this->objects[i].size > this->xBounds.second)
     {
-      this->objects[i].position.x = this->xBounds.first;
-      this->objects[i].velocity.x = -this->objects[i].velocity.x * wallRestitution;
+      this->objects[i].position.x = this->xBounds.second - this->objects[i].size;
+      this->objects[i].velocity.x = -this->objects[i].velocity.x * this->wallRestitution;
     }
-    else if (this->objects[i].position.x > this->xBounds.second)
+    else if (this->objects[i].position.x - this->objects[i].size < this->xBounds.first)
     {
-      this->objects[i].position.x = this->xBounds.second;
-      this->objects[i].velocity.x = -this->objects[i].velocity.x * wallRestitution;
+      this->objects[i].position.x = this->xBounds.first + this->objects[i].size;
+      this->objects[i].velocity.x = -this->objects[i].velocity.x * this->wallRestitution;
     }
-
-    if (this->objects[i].position.y < this->yBounds.first)
+    if (this->objects[i].position.y + this->objects[i].size > this->yBounds.second)
     {
-      this->objects[i].position.y = this->yBounds.first;
-      this->objects[i].velocity.y = -this->objects[i].velocity.y * wallRestitution;
+      this->objects[i].position.y = this->yBounds.second - this->objects[i].size;
+      this->objects[i].velocity.y = -this->objects[i].velocity.y * this->wallRestitution;
     }
-    else if (this->objects[i].position.y > this->yBounds.second)
+    else if (this->objects[i].position.y - this->objects[i].size < this->yBounds.first)
     {
-      this->objects[i].position.y = this->yBounds.second;
-      this->objects[i].velocity.y = -this->objects[i].velocity.y * wallRestitution;
+      this->objects[i].position.y = this->yBounds.first + this->objects[i].size;
+      this->objects[i].velocity.y = -this->objects[i].velocity.y * this->wallRestitution;
     }
   }
 }
