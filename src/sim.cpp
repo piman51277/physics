@@ -10,11 +10,18 @@ Sim::Sim(std::pair<double, double> xBounds, std::pair<double, double> yBounds)
 
 void Sim::addObject(PhysicsObject obj)
 {
+  // cap entity count at 6000
+  if (this->objects.size() >= 6000)
+  {
+    return;
+  }
+
   this->objects.push_back(obj);
 }
 
 void Sim::physicsTick(double timeDelta)
 {
+
   // first, for every pair of objects, check if they are colliding
   for (int i = 0; i < this->objects.size(); i++)
   {
