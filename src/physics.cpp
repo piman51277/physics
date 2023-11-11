@@ -140,14 +140,9 @@ void PhysicsObject::collide(PhysicsObject &obj)
 
   PhysicsVector direction = (this->position - obj.position).norm();
 
-  // if the overlap is more than 0.1m, then apply a strong force to separate them
+  // if the overlap is more than 0.1m, then separate them
   if (overlap > 0.1)
   {
-    // apply the force
-    double strength = overlap + 0.01;
-    this->applyForce(direction.smul(strength * 10));
-    obj.applyForce(direction.smul(strength * -10));
-
     // teleport them away
     this->position = this->position + direction.smul(overlap * 0.5);
     obj.position = obj.position - direction.smul(overlap * 0.5);
