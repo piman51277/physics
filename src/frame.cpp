@@ -19,21 +19,34 @@ Frame::Frame(int width, int height, const char *title, float scale, int framerat
   int tickInterval = 1000.0 / (float)framerate;
   auto lastTick = std::chrono::system_clock::now();
 
-  PhysicsObject lgObj(5, 50, {500, 500}, {0, 0});
+  PhysicsObject lgObj(5, 50, {960, 540}, {0, 0});
   sim->addObject(lgObj);
   std::mt19937 rng;
   std::uniform_real_distribution<float> dist(-300, 300);
 
   // add objects in a grid
-  for (int x = 10; x <= 990; x += 20)
+  for (int x = 10; x <= 1910; x += 30)
   {
-    for (int y = 10; y <= 990; y += 20)
+    for (int y = 10; y <= 1070; y += 30)
     {
       PhysicsObject smObj(1, 1, {(float)x, (float)y}, {dist(rng), dist(rng)});
 
       if (!lgObj.isBoxColliding(smObj))
       {
         sim->addObject(smObj);
+      }
+    }
+  }
+  // wait until click to start
+  while (true)
+  {
+    SDL_Event e;
+    if (SDL_WaitEvent(&e))
+    {
+      if (e.type == SDL_MOUSEBUTTONDOWN)
+      {
+        lastTick = std::chrono::system_clock::now();
+        break;
       }
     }
   }
@@ -175,7 +188,7 @@ void Frame::draw()
   }
 
   // draw the path
-  SDL_FPoint fpath[1000];
+  SDL_FPoint fpath[10000];
   int i = 0;
   for (auto elem : this->path)
   {
@@ -196,7 +209,7 @@ void Frame::tick(float timeDelta)
   this->path.push_back(this->sim->objects[0].position);
 
   // if the path is longer than 1000, cull
-  if (this->path.size() > 1000)
+  if (this->path.size() > 10000)
   {
     this->path.pop_front();
   }
